@@ -1,0 +1,15 @@
+---
+galaxy_info:
+  author: Michael Thirion
+  description: Local install of single Fuse Fabric
+  company: RedHat@ (JBoss)
+  min_ansible_version: 1.1
+  platforms:
+   - name: redhat
+     versions:
+      - all
+  categories:
+   - middleware:integration
+
+#dependencies:
+#- {role: base}

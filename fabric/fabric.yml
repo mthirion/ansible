@@ -1,0 +1,11 @@
+---
+- hosts: local
+  user: mthirion
+  sudo: no
+  pre_tasks:
+    - shell: echo 'Beginning install of Fuse Fabric...'
+  roles:
+   - fabric
+  post_tasks:
+    - shell: echo 'End of install of Fuse Fabric'
+

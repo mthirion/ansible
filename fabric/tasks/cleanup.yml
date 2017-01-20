@@ -1,0 +1,16 @@
+---
+    # Stop processes
+    - name: list processes
+      shell: ps -ef | grep -v ansible | grep karaf | grep java | awk '{print $2}'
+      register: process_list
+    - name: kill identified processes
+      shell: kill -9 {{ item }}
+      with_items: "{{ process_list.stdout_lines }}"
+
+    # Cleanup
+    - name: remove previous install
+      file: path={{fuse_home}} state=absent 
+    
+    - debug:
+        msg="cleanup done" 
+

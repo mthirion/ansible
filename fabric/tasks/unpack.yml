@@ -1,0 +1,32 @@
+    
+    # Unzip fuse package
+    - name: unzip fuse
+      shell: unzip -d {{fuse_basedir}} {{fuse_zipdir}}/{{fuse_zipname}}
+    
+    # Uncomment admin user
+    - name: uncomment admin user
+      replace:
+        destfile: "{{fuse_home}}/etc/users.properties"
+        regexp: '#admin=admin.*'
+        replace: "admin={{fuse_pswd}},admin,manager,viewer,Monitor, Operator, Maintainer, Deployer, Auditor, Administrator, SuperUser"
+    
+    # Change karaf name
+    - name: change karaf name
+      replace:
+        destfile: /redhat/platforms/fuse/jboss-fuse-6.3.0.redhat-187/etc/system.properties
+        regexp: 'karaf.name = root'
+        replace: "karaf.name = {{karaf_name}}"
+    
+    # Start fuse standalone process
+    - name: start fuse standalone
+      shell : "{{fuse_home}}/bin/start"
+
+    # wait until karaf is up
+    - name: wait for startup to complete
+      shell: "{{fuse_home}}/bin/client -u admin -p {{fuse_pswd}} \"echo\" "
+      register: result
+      until: result.stderr.find("Failed to get the session") != 0
+      retries: 10
+      delay: 10
+
+

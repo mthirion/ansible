@@ -1,0 +1,27 @@
+---
+ - name: create keystore
+   file: path={{keystore_dir}} state=directory
+
+ - name: generate certificate
+   shell: "keytool -genkeypair -keyalg RSA -keysize 2048 -sigalg SHA256withRSA -validity 3650 -keystore {{keystore_dir}}/{{keystore_name}} -storepass {{keystore_pswd}} -keypass {{keystore_pswd}} -dname cn={{ssl_domain}} -alias {{certificate_alias}} -ext {{x509_extension}}"
+
+ - name: configure SSL profile
+   command: "{{ item }} "
+   with_items:
+        - "{{fuse_home}}/bin/client -u admin -p {{fuse_pswd}} \"fabric:profile-create --parent default ssl\" "
+        - "{{fuse_home}}/bin/client -u admin -p {{fuse_pswd}} \"fabric:profile-edit --pid org.ops4j.pax.web/org.osgi.service.http.enabled=false ssl\" "
+        - "{{fuse_home}}/bin/client -u admin -p {{fuse_pswd}} \"fabric:profile-edit --pid org.ops4j.pax.web/org.osgi.service.http.secure.enabled=true ssl\" "
+        - "{{fuse_home}}/bin/client -u admin -p {{fuse_pswd}} \"fabric:profile-edit --pid org.ops4j.pax.web/org.osgi.service.http.port.secure=\\${port:8443,8543} ssl\" "
+        - "{{fuse_home}}/bin/client -u admin -p {{fuse_pswd}} \"fabric:profile-edit --pid org.ops4j.pax.web/org.ops4j.pax.web.ssl.keystore={{keystore_dir}}/{{keystore_name}} ssl\" "
+        - "{{fuse_home}}/bin/client -u admin -p {{fuse_pswd}} \"fabric:profile-edit --pid org.ops4j.pax.web/org.ops4j.pax.web.ssl.password={{keystore_pswd}} ssl\" "
+        - "{{fuse_home}}/bin/client -u admin -p {{fuse_pswd}} \"fabric:profile-edit --pid org.ops4j.pax.web/org.ops4j.pax.web.ssl.keypassword={{keystore_pswd}} ssl\" "
+#        - "{{fuse_home}}/bin/client -u admin -p {{fuse_pswd}} \"fabric:container-add-profile {{karaf_name}} ssl\" "
+
+ - name: configure JVM SSL
+   lineinfile: dest={{fuse_home}}/bin/setenv state=present line="EXTRA_JAVA_OPTS=\"{{ lookup('env','EXTRA_JAVA_OPTS') }} -Djavax.net.ssl.trustStore={{keystore_dir}}/{{keystore_name}} -Djavax.net.ssl.trustStorePassword={{keystore_pswd}} -Djavax.net.ssl.keyStore={{keystore_dir}}/{{keystore_name}} -Djavax.net.ssl.keyStorePassword={{keystore_pswd}}\" "
+
+ - name: reload config
+   shell: echo
+   notify:
+     - restart fuse
+

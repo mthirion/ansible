@@ -1,0 +1,7 @@
+---
+- name: restart fuse
+  command: "{{item}}"
+  with_items:
+   - /redhat/platforms/fuse/jboss-fuse-6.3.0.redhat-187/bin/stop
+   - sleep 10
+   - /redhat/platforms/fuse/jboss-fuse-6.3.0.redhat-187/bin/start

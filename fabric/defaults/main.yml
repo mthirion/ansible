@@ -1,0 +1,4 @@
+---
+maven_url: "http://localhost:8081/nexus/content/groups/public/"
+ssl_domain: "com.redhat.customers.bnp"
+certificate_alias: "bnpp"

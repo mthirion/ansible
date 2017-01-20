@@ -1,0 +1,21 @@
+
+    # Create a fabric
+    - name: create a fabric
+      shell: "{{fuse_home}}/bin/client -u admin -p admin \"fabric:create --wait-for-provisioning\" "
+
+    # Modify maven settings in agent.properties
+    - name: configure maven repositories
+      command: "{{ item }}"
+      with_items:
+        - "{{fuse_home}}/bin/client -u admin -p {{fuse_pswd}} \"fabric:profile-edit --pid io.fabric8.agent/org.ops4j.pax.url.mvn.repositories={{maven_url}} default\" " 
+
+    # Configure logging
+    - name: configure logging
+      command: "{{ item }} "
+      with_items:
+        - "{{fuse_home}}/bin/client -u admin -p {{fuse_pswd}} \"fabric:profile-edit --pid org.ops4j.pax.logging/log4j.appender.out.maxFileSize=10MB --append default\" " 
+        - "{{fuse_home}}/bin/client -u admin -p {{fuse_pswd}} \"fabric:profile-edit --pid org.ops4j.pax.logging/log4j.appender.out.append=true --append default\" "
+        - "{{fuse_home}}/bin/client -u admin -p {{fuse_pswd}} \"fabric:profile-edit --pid org.ops4j.pax.logging/log4j.appender.out.maxBackupIndex=10 --append default\" " 
+
+
+

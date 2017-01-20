@@ -1,0 +1,5 @@
+---
+ - include: cleanup.yml
+ - include: unpack.yml
+ - include: fabric.yml
+ - include: ssl.yml
